@@ -1,4 +1,6 @@
-import { expect } from 'vitest';
+import * as React from 'react';
+
+import { describe, expect, it } from 'vitest';
 
 import { render, screen } from '@testing-library/react';
 
@@ -8,6 +10,7 @@ describe('App', () => {
   it('renders with name', () => {
     render(<App name="Taro" />);
     screen.debug();
-    expect(screen.getByText(/^Hello!/)).toBe('Hello! Taro');
+    const AppNode = screen.getByText(/^Hello!/);
+    expect(AppNode.textContent).toBe('Hello! Taro');
   });
 });
