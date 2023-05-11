@@ -2,7 +2,7 @@ import { expect } from 'vitest';
 
 import { render, screen } from '@testing-library/react';
 
-import App from './index';
+import { App } from './index';
 
 describe('App', () => {
   it('renders with name', () => {
