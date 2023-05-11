@@ -61,6 +61,7 @@ jobs:
         if: matrix.machine == 'macos-latest' && matrix.browser == 'safari'
       - run: npx playwright install --with-deps webkit
         if: matrix.provider == 'playwright' && matrix.browser == 'webkit'
+      # NOTE: WebKit and Safari initially fail the test, but succeed on the second attempt.
       - run: >
           npx vitest
           --browser.provider=${{ matrix.provider }}
