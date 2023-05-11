@@ -1,0 +1,68 @@
+name: test
+
+on:
+  - push
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-with-browser:
+    name: ${{ matrix.browser }} on ${{ matrix.provider }}
+    runs-on: ${{ matrix.machine }}
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        # provider:
+        #   - webdriverio
+        #   - playwright
+        # browser:
+        #   # webdriverio
+        #   - firefox
+        #   - chrome
+        #   - edge
+        #   - safari
+        #   # playwright
+        #   - firefox
+        #   - webkit
+        #   - chromium
+        include:
+          - machine: ubuntu-latest
+            provider: webdriverio
+            browser: firefox
+          - machine: ubuntu-latest
+            provider: webdriverio
+            browser: chrome 
+          - machine: ubuntu-latest
+            provider: webdriverio
+            browser: edge
+          - machine: macos-latest
+            provider: webdriverio
+            browser: safari
+          - machine: ubuntu-latest
+            provider: playwright
+            browser: firefox
+          - machine: ubuntu-latest
+            provider: playwright
+            browser: webkit
+          - machine: ubuntu-latest
+            provider: playwright
+            browser: chromium
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          cache: npm
+          node-version: lts/*
+      - run: npm ci
+      - run: npm install -D safaridriver
+        if: matrix.machine == 'macos-latest' && matrix.browser == 'safari'
+      - run: npx playwright install --with-deps webkit
+        if: matrix.provider == 'playwright' && matrix.browser == 'webkit'
+      - run: >
+          npx vitest
+          --browser.provider=${{ matrix.provider }}
+          --browser.name=${{ matrix.browser }}
+          --browser.headless
